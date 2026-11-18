@@ -26,7 +26,7 @@ class GetList extends AbstractAction implements \Magento\Framework\App\Action\Ht
         $this->storeController = $storeController;
         $this->productsController = $productsController;
 
-        return parent::__construct($context, $resultPageFactory, $jsonHelper, $extensionSettings);
+        parent::__construct($context, $resultPageFactory, $jsonHelper, $extensionSettings);
     }
 
     public function execute()
@@ -44,7 +44,7 @@ class GetList extends AbstractAction implements \Magento\Framework\App\Action\Ht
             // set the current store
             $this->productsController->setStoreId($request['store_id']);
 
-            $this->productsController->setLoadFromCache(@$request['load_from_cache']);
+            $this->productsController->setLoadFromCache($request['load_from_cache'] ?? null);
 
             /** @var \Magento\Framework\DataObject[] $products */
             $products = $this->productsController->getProducts($request);
@@ -58,7 +58,7 @@ class GetList extends AbstractAction implements \Magento\Framework\App\Action\Ht
                     'returned_total' => count($products),
                     'memory' =>round((memory_get_usage() / 1024) / 1024,2).'M',
                     'pagination' => [
-                        'limit' => $this->productsController->getLimit(@$request['limit']),
+                        'limit' => $this->productsController->getLimit($request['limit'] ?? null),
                         'page' => (isset($request['page']) ? (int)$request['page'] : 1)
                     ],
                     'products' => $products

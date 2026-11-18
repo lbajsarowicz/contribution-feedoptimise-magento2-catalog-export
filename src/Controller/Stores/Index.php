@@ -53,7 +53,7 @@ class Index extends \Magento\Framework\App\Action\Action
 		$this->storeManager = $storeManager;
 		$this->currencyModel = $currencyModel;
 
-		return parent::__construct($context);
+		parent::__construct($context);
 	}
 	/**
 	 * View page action
@@ -93,7 +93,7 @@ class Index extends \Magento\Framework\App\Action\Action
 		catch (\Throwable $e) {
 			$result = $this->resultJsonFactory->create();
 
-			$result->setData([
+			return $result->setData([
 				'error' => true,
 				'code' => 500,
 				'error_msg' => $e->getMessage()
@@ -101,7 +101,7 @@ class Index extends \Magento\Framework\App\Action\Action
 		} catch (\Exception $e) {
 			$result = $this->resultJsonFactory->create();
 
-			$result->setData([
+			return $result->setData([
 				'error' => true,
 				'code' => 500,
 				'error_msg' => $e->getMessage()
@@ -193,6 +193,5 @@ class Index extends \Magento\Framework\App\Action\Action
 
 function feedoptimise_fatal_handler_stores()
 {
-	echo json_encode(error_get_last(), JSON_PRETTY_PRINT);
-	die;
+	file_put_contents('php://output', json_encode(error_get_last(), JSON_PRETTY_PRINT));
 }

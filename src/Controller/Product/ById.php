@@ -21,7 +21,7 @@ class ById extends AbstractAction implements \Magento\Framework\App\Action\HttpP
         $this->productController = $productController;
         $this->storeController = $storeController;
 
-        return parent::__construct($context, $resultPageFactory, $jsonHelper, $extensionSettings);
+        parent::__construct($context, $resultPageFactory, $jsonHelper, $extensionSettings);
     }
 
     public function execute()
@@ -47,7 +47,7 @@ class ById extends AbstractAction implements \Magento\Framework\App\Action\HttpP
             // set the current store
             $this->productController->setStoreId($request['store_id']);
 
-            $this->productController->setLoadFromCache(@$request['load_from_cache']);
+            $this->productController->setLoadFromCache($request['load_from_cache'] ?? null);
 
             /** @var \Magento\Framework\DataObject[] $product */
             $product = $this->productController->getProduct($request['entity_id']);

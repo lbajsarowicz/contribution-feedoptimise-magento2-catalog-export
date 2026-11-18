@@ -18,7 +18,7 @@ class GetList extends AbstractAction implements \Magento\Framework\App\Action\Ht
     ){
         $this->storeController = $storeController;
 
-        return parent::__construct($context, $resultPageFactory, $jsonHelper, $extensionSettings);
+        parent::__construct($context, $resultPageFactory, $jsonHelper, $extensionSettings);
     }
 
     public function execute()
