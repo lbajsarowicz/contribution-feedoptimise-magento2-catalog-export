@@ -54,12 +54,12 @@ class Index extends \Magento\Framework\App\Action\Action
         $this->currencyHelper = $currencyHelper;
         $this->storeController = $storeController;
         $this->_orderCollectionFactory = $orderCollectionFactory;
-        return parent::__construct($context);
+        parent::__construct($context);
     }
 
     /**
      * View page action
-     * @return \Magento\Framework\Controller\ResultInterface
+     * @return \Magento\Framework\Controller\ResultInterface|\Magento\Framework\App\ResponseInterface
      */
     public function execute()
     {
@@ -79,7 +79,7 @@ class Index extends \Magento\Framework\App\Action\Action
             {
                 return $result->setData($settingsError);
             }
-            else if(($storeError = $this->storeController->checkStore(@$request['store_id'])) !== true)
+            else if(($storeError = $this->storeController->checkStore($request['store_id'] ?? null)) !== true)
             {
                 return $result->setData($storeError);
             }
@@ -104,6 +104,7 @@ class Index extends \Magento\Framework\App\Action\Action
             }
 
 
+            return $this->getResponse();
         }catch (\Throwable $e) {
             $result = $this->resultJsonFactory->create();
 
@@ -199,6 +200,5 @@ class Index extends \Magento\Framework\App\Action\Action
 
 function feedoptimise_fatal_handler_product()
 {
-    echo json_encode(error_get_last(), JSON_PRETTY_PRINT);
-    die;
+    file_put_contents('php://output', json_encode(error_get_last(), JSON_PRETTY_PRINT));
 }

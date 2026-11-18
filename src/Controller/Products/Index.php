@@ -43,6 +43,9 @@ class Index extends \Magento\Framework\App\Action\Action
 	protected $productStatus;
 	protected $productVisibility;
 
+	/** @var bool */
+	protected $loadAllCurrencies = false;
+
 	/**
 	 * Framework Params
 	 * @param \Magento\Framework\App\Action\Context $context
@@ -92,7 +95,7 @@ class Index extends \Magento\Framework\App\Action\Action
 		$this->productStatus = $productStatus;
 		$this->productVisibility = $productVisibility;
 
-		return parent::__construct($context);
+		parent::__construct($context);
 	}
 	/**
 	 * View page action
@@ -118,7 +121,7 @@ class Index extends \Magento\Framework\App\Action\Action
 			{
 				return $result->setData($settingsError);
 			}
-			else if(($storeError = $this->storeController->checkStore(@$request['store_id'])) !== true)
+			else if(($storeError = $this->storeController->checkStore($request['store_id'] ?? null)) !== true)
 			{
 				return $result->setData($storeError);
 			}
@@ -128,7 +131,7 @@ class Index extends \Magento\Framework\App\Action\Action
 				// set the current store
 				$this->setStoreId($request['store_id']);
 
-                $this->setLoadFromCache(@$request['load_from_cache']);
+                $this->setLoadFromCache($request['load_from_cache'] ?? null);
 
                 if(isset($request['load_all_currencies'])){
                     $this->setLoadAllCurrencies((bool)$request['load_all_currencies']);
@@ -146,7 +149,7 @@ class Index extends \Magento\Framework\App\Action\Action
 						'returned_total' => count($products),
 						'memory' =>round((memory_get_usage() / 1024) / 1024,2).'M',
 						'pagination' => [
-							'limit' => $this->getLimit(@$request['limit']),
+							'limit' => $this->getLimit($request['limit'] ?? null),
 							'page' => (isset($request['page']) ? (int)$request['page'] : 1)
 						],
 						'products' => $products
@@ -157,7 +160,7 @@ class Index extends \Magento\Framework\App\Action\Action
 		catch (\Throwable $e) {
 			$result = $this->resultJsonFactory->create();
 
-			$result->setData([
+			return $result->setData([
 				'error' => true,
 				'code' => 500,
 				'memory' =>round((memory_get_usage() / 1024) / 1024,2).'M',
@@ -166,7 +169,7 @@ class Index extends \Magento\Framework\App\Action\Action
 		} catch (\Exception $e) {
 			$result = $this->resultJsonFactory->create();
 
-			$result->setData([
+			return $result->setData([
 				'error' => true,
 				'code' => 500,
 				'memory' =>round((memory_get_usage() / 1024) / 1024,2).'M',
@@ -257,7 +260,7 @@ class Index extends \Magento\Framework\App\Action\Action
 			$collection->addAttributeToFilter('visibility', ['in' => $this->productVisibility->getVisibleInSiteIds()]);
 		}
 
-		$collection->setPageSize($this->getLimit(@$request['limit']));
+		$collection->setPageSize($this->getLimit($request['limit'] ?? null));
 
         $collection->setOrder('entity_id','ASC');
 
@@ -280,6 +283,5 @@ class Index extends \Magento\Framework\App\Action\Action
 
 function feedoptimise_fatal_handler_products()
 {
-	echo json_encode(error_get_last(), JSON_PRETTY_PRINT);
-	die;
+	file_put_contents('php://output', json_encode(error_get_last(), JSON_PRETTY_PRINT));
 }

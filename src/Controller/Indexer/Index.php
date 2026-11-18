@@ -59,7 +59,7 @@ class Index extends \Magento\Framework\App\Action\Action
         $this->indexFactory = $indexFactory;
         $this->indexCollection = $indexCollection;
         $this->cacheTypeList = $cacheTypeList;
-        return parent::__construct($context);
+        parent::__construct($context);
     }
     /**
      * View page action
@@ -88,7 +88,7 @@ class Index extends \Magento\Framework\App\Action\Action
         } catch (\Throwable $e) {
             $result = $this->resultJsonFactory->create();
 
-            $result->setData([
+            return $result->setData([
                 'error' => true,
                 'code' => 500,
                 'error_msg' => $e->getMessage()
@@ -96,7 +96,7 @@ class Index extends \Magento\Framework\App\Action\Action
         } catch (\Exception $e) {
             $result = $this->resultJsonFactory->create();
 
-            $result->setData([
+            return $result->setData([
                 'error' => true,
                 'code' => 500,
                 'error_msg' => $e->getMessage()

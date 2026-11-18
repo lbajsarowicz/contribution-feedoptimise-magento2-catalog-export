@@ -34,7 +34,7 @@ class Index extends \Magento\Framework\App\Action\Action
 	{
 		$this->extensionSettings = $extensionSettings;
 		$this->resultJsonFactory = $resultJsonFactory;
-		return parent::__construct($context);
+		parent::__construct($context);
 	}
 	/**
 	 * View page action

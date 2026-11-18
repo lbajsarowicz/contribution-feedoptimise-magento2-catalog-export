@@ -116,7 +116,7 @@ class Index extends \Magento\Framework\App\Action\Action
         $this->getSalableQuantityDataBySku = $getSourceItemsBySku->create(['type' => 'GetSalableQuantityDataBySku']);
         $this->getSourceItemsBySku = $getSourceItemsBySku->create(['type' => 'GetSourceItemsBySku']);
 
-        return parent::__construct($context);
+        parent::__construct($context);
     }
     /**
      * View page action
@@ -142,7 +142,7 @@ class Index extends \Magento\Framework\App\Action\Action
             {
                 return $result->setData($settingsError);
             }
-            else if(($storeError = $this->storeController->checkStore(@$request['store_id'])) !== true)
+            else if(($storeError = $this->storeController->checkStore($request['store_id'] ?? null)) !== true)
             {
                 return $result->setData($storeError);
             }
@@ -164,7 +164,7 @@ class Index extends \Magento\Framework\App\Action\Action
                     $this->setLoadAllCurrencies((bool)$request['load_all_currencies']);
                 }
 
-                $this->setLoadFromCache(@$request['load_from_cache']);
+                $this->setLoadFromCache($request['load_from_cache'] ?? null);
 
                 /** @var \Magento\Framework\DataObject[] $product */
                 $product = $this->getProduct($request['entity_id']);
@@ -294,7 +294,7 @@ class Index extends \Magento\Framework\App\Action\Action
             }
 
             if(count($urlParams)){
-                $child['_raw_child_url'] = @$child['url'];
+                $child['_raw_child_url'] = $child['url'] ?? null;
                 // append the pre-selection params to the product url
                 $child['url'] = $_product->getProductUrl().'#'.implode('&', $urlParams);
             }
@@ -320,7 +320,7 @@ class Index extends \Magento\Framework\App\Action\Action
             {
                 $_childProduct = $this->getProductById($_childId);
                 $child = $this->getProductData($_childProduct);
-                $child['_raw_child_url'] = @$child['url'];
+                $child['_raw_child_url'] = $child['url'] ?? null;
                 $child['url'] = $_product->getProductUrl();
                 $return[] = $child;
                 $_childProduct->clearInstance();
@@ -373,13 +373,13 @@ class Index extends \Magento\Framework\App\Action\Action
                 {
                     $_childProduct = $this->getProductById($_childId);
                     $child = $this->getProductData($_childProduct);
-                    $child['_raw_child_url'] = @$child['url'];
+                    $child['_raw_child_url'] = $child['url'] ?? null;
                     $child['url'] = $_product->getProductUrl();
                     if(isset($bundleOptions[$_childId]))
                         $child['bundle_option'] = $bundleOptions[$_childId];
                     if($type == 'bundle'){
                         $child['bundle_option_id'] = $optionId;
-                        if(@$options[$optionId])
+                        if(!empty($options[$optionId]))
                             $child['bundle_option_title'] = $options[$optionId];
                     }
 
@@ -439,8 +439,8 @@ class Index extends \Magento\Framework\App\Action\Action
         try
         {
             $product['options'] = [];
-            $_options = @$_product->getOptions();
-            if (is_array($_options) || $_options instanceof Traversable)
+            $_options = $_product->getOptions();
+            if (is_array($_options) || $_options instanceof \Traversable)
             {
                 foreach ($_options as $o)
                 {
@@ -757,6 +757,5 @@ class Index extends \Magento\Framework\App\Action\Action
 
 function feedoptimise_fatal_handler_product()
 {
-    echo json_encode(error_get_last(), JSON_PRETTY_PRINT);
-    die;
+    file_put_contents('php://output', json_encode(error_get_last(), JSON_PRETTY_PRINT));
 }
